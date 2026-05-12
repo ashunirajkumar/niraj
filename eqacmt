@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Rail Emergency Quota | Western Railway Letterhead</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #020617;
+      color: #f1f5f9;
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px 20px;
+    }
+    #loginOverlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+      z-index: 10000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      backdrop-filter: blur(2px);
+    }
+    .login-box {
+      background: rgba(15, 23, 42, 0.98);
+      padding: 40px 35px;
+      border-radius: 30px;
+      border: 2px solid #38bdf8;
+      box-shadow: 0 0 50px rgba(56, 189, 248, 0.4);
+      text-align: center;
+      width: 380px;
+      max-width: 90%;
+    }
+    .login-box h2 { font-family: 'Orbitron', sans-serif; color: #38bdf8; margin-bottom: 25px; letter-spacing: 2px; }
+    .login-box input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      background: #000;
+      border: 1px solid #334155;
+      color: #fff;
+      border-radius: 12px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .login-box button {
+      width: 100%;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      color: #000;
+      padding: 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      font-family: 'Orbitron', sans-serif;
+      transition: 0.3s;
+    }
+    .login-box button:hover { background: #fff; box-shadow: 0 0 20px #38bdf8; transform: translateY(-2px); }
+    #errorMsg { color: #ff4444; margin-top: 12px; display: none; }
+
+    .dashboard {
+      width: 100%;
+      max-width: 1400px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 40px;
+      padding: 40px 35px;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.8);
+      position: relative;
+    }
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      text-align: center;
+      background: linear-gradient(to right, #fff, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .grid-container { display: grid; gap: 25px; margin-bottom: 35px; }
+    .input-card {
+      background: rgba(30, 41, 59, 0.6);
+      padding: 22px 20px;
+      border-radius: 25px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: all 0.2s;
+    }
+    label { color: #38bdf8; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px; display: block; letter-spacing: 1px; }
+    
+    .dashboard input:not(.pnr-digit), .dashboard select {
+      text-transform: uppercase;
+    }
+    .dashboard input, .dashboard select {
+      width: 100%;
+      background: #000;
+      border: 1px solid #334155;
+      border-radius: 14px;
+      color: white;
+      font-size: 1.2rem;
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      text-align: center;
+    }
+    .pnr-row {
+      display: flex;
+      gap: 4px;
+      flex-wrap: nowrap;
+      justify-content: center;
+      width: 100%;
+    }
+    .pnr-digit {
+      width: 9%;
+      max-width: 42px;
+      min-width: 30px;
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      background: #000;
+      border: 1px solid #38bdf8;
+      border-radius: 8px;
+      padding: 8px 0;
+      font-family: 'JetBrains Mono', monospace;
+      flex-shrink: 1;
+    }
+    .pnr-digit:focus {
+      outline: none;
+      border-color: #fbbf24;
+      box-shadow: 0 0 8px #fbbf24;
+    }
+    .checkbox-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .checkbox-group label {
+      margin-bottom: 0;
+      font-size: 0.8rem;
+    }
+    .logo-upload {
+      margin-top: 15px;
+    }
+    .logo-upload label {
+      font-size: 0.8rem;
+      display: inline-block;
+      margin-right: 10px;
+    }
+    .btn-row { display: flex; justify-content: center; gap: 20px; margin: 15px 0 30px; flex-wrap: wrap; }
+    button {
+      padding: 12px 28px;
+      border-radius: 40px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      font-size: 0.85rem;
+      transition: 0.2s;
+    }
+    #saveBtn { background: #38bdf8; color: #000; box-shadow: 0 4px 12px rgba(56,189,248,0.3); }
+    #viewHistoryBtn { background: #8b5cf6; color: white; }
+    #deleteAllBtn { background: #ef4444; color: #fff; }
+    #printLetterheadBtn { background: #10b981; color: white; }
+    .history-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .history-buttons button {
+      padding: 10px 24px;
+    }
+    button:hover { transform: translateY(-2px); filter: brightness(1.05); }
+    #settingsBtn {
+      position: absolute; top: 20px; right: 25px;
+      background: rgba(56,189,248,0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 8px 18px;
+      border-radius: 40px;
+      cursor: pointer;
+    }
+    .table-container {
+      margin-top: 30px;
+      overflow-x: auto;
+      border-radius: 24px;
+      background: rgba(0,0,0,0.5);
+      max-height: 500px;
+      border: 1px solid rgba(56,189,248,0.2);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 1700px; }
+    th { 
+      background: rgba(56, 189, 248, 0.2); 
+      padding: 14px 8px; 
+      color: #38bdf8; 
+      position: sticky; 
+      top: 0; 
+      backdrop-filter: blur(4px); 
+      font-weight: 700;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+    }
+    td { 
+      padding: 12px 6px; 
+      text-align: center; 
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 14px;
+      color: #f1f5f9;
+    }
+    .edit-mode-highlight { border: 2px solid #fbbf24 !important; box-shadow: 0 0 8px #fbbf24; }
+    #settingsPanel {
+      display: none; position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #0f172a; padding: 35px; border-radius: 30px;
+      border: 2px solid #38bdf8; z-index: 10001; width: 400px;
+      max-width: 90%;
+    }
+    #toastMsg {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #22c55e; color: white; padding: 12px 28px;
+      border-radius: 50px; display: none; z-index: 10002;
+      font-family: monospace;
+      font-weight: bold;
+      z-index: 10004;
+    }
+    .badge-auto {
+      background: #f59e0b20;
+      border-radius: 30px;
+      padding: 4px 12px;
+      font-size: 0.7rem;
+      display: inline-block;
+      margin-left: 12px;
+    }
+    @media (max-width: 750px) {
+      .dashboard { padding: 30px 18px; }
+      .input-card { padding: 18px 15px; }
+      .pnr-digit { font-size: 0.9rem; padding: 6px 0; }
+      td { font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginOverlay">
+  <div class="login-box">
+    <h2>🚆 EMERGENCY QUOTA</h2>
+    <input type="text" id="userInput" placeholder="User ID" autocomplete="off">
+    <input type="password" id="passInput" placeholder="Password">
+    <button onclick="checkLogin()">UNLOCK SYSTEM</button>
+    <div id="errorMsg">❌ Invalid Credentials</div>
+  </div>
+</div>
+
+<div id="settingsPanel">
+  <h2 style="color:#38bdf8;">🔐 UPDATE CREDENTIALS</h2>
+  <input type="text" id="newID" placeholder="New Username" style="width:100%; padding:12px; margin-bottom:15px;">
+  <input type="password" id="newPass" placeholder="New Password" style="width:100%; padding:12px; margin-bottom:20px;">
+  <div style="display:flex; gap:12px">
+    <button onclick="saveNewPass()" style="background:#22c55e; color:white;">💾 SAVE</button>
+    <button onclick="closeSettings()" style="background:#ef4444;">CANCEL</button>
+  </div>
+</div>
+
+<div class="dashboard" id="dashboard">
+  <button id="settingsBtn" onclick="openSettings()">⚙️ CREDENTIALS</button>
+  <header>
+    <h1>🚞 EMERGENCY QUOTA MANAGER <span class="badge-auto">☁️ SCAN TO CLOUD + RAILWAY LETTERHEAD</span></h1>
+  </header>
+
+  <div id="inputGrids">
+    <div class="grid-container" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="input-card">
+        <label>🔢 SERIAL NUMBER</label>
+        <input type="text" id="serial" placeholder="EQ-001" autocomplete="off">
+      </div>
+      <div class="input-card">
+        <label>📝 REQUEST OF (Officer/Dept)</label>
+        <input type="text" id="requestOf" placeholder="DRM / Commercial">
+        <div class="checkbox-group">
+          <input type="checkbox" id="requestClipboardCheckbox">
+          <label for="requestClipboardCheckbox">📋 Paste from clipboard & show in print</label>
+        </div>
+      </div>
+      <div class="input-card">
+        <label>🏢 HEADQUARTERS (CSMT/CCG)</label>
+        <input type="text" id="headquarters" placeholder="CSMT / CCG">
+      </div>
+    </div>
+    <div class="grid-container" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="input-card"><label>📅 DATE OF JOURNEY</label><input type="date" id="journeyDate"></div>
+      <div class="input-card"><label>🚆 TRAIN NUMBER</label><input type="text" id="trainNo" placeholder="12345"></div>
+      <div class="input-card"><label>🚂 TRAIN NAME</label><input type="text" id="trainName" placeholder="SHATABDI EXPRESS"></div>
+    </div>
+    <div class="grid-container" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="input-card"><label>👤 PASSENGER NAME</label><input type="text" id="passengerName" placeholder="FULL NAME"></div>
+      <div class="input-card"><label>📍 STATION FROM</label><input type="text" id="stationFrom" placeholder="NEW DELHI"></div>
+    </div>
+    <div class="grid-container" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="input-card"><label>📍 STATION TO</label><input type="text" id="stationTo" placeholder="MUMBAI CENTRAL"></div>
+      <div class="input-card"><label>🛏️ NUMBER OF BERTH</label><input type="number" id="berth" placeholder="1" min="1"></div>
+    </div>
+    <div class="grid-container" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="input-card"><label>🚇 CLASS</label><input type="text" id="classType" placeholder="2A / 3A / SL"></div>
+      <div class="input-card">
+        <label>🎫 PASS / UPN</label>
+        <input type="text" id="passUpn" placeholder="PASS ID / UPN">
+        <div class="checkbox-group">
+          <input type="checkbox" id="passUpnOptionalCheckbox">
+          <label for="passUpnOptionalCheckbox">✅ PASS/UPN Optional (हटाने के लिए टिक करें)</label>
+        </div>
+      </div>
+    </div>
+    <div class="grid-container" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="input-card"><label>🎯 PURPOSE</label><input type="text" id="purpose" placeholder="EMERGENCY / MEDICAL / DUTY"></div>
+      <div class="input-card">
+        <label>📋 REFERENCE</label>
+        <input type="text" id="reference" placeholder="REFERENCE NUMBER">
+        <div class="checkbox-group">
+          <input type="checkbox" id="clipboardCheckbox">
+          <label for="clipboardCheckbox">📋 Paste from clipboard (add Reference line in print)</label>
+        </div>
+      </div>
+    </div>
+    <div class="grid-container" style="grid-template-columns: repeat(2, 1fr);">
+      <div class="input-card"><label>📱 MOBILE NUMBER</label><input type="tel" id="mobile" placeholder="9876543210"></div>
+      <div class="input-card"><label>🏠 ADDRESS</label><input type="text" id="address" placeholder="FULL ADDRESS"></div>
+    </div>
+    <div class="input-card">
+      <label>📅 LETTERHEAD DATE</label>
+      <input type="date" id="letterheadDate">
+    </div>
+    <div class="input-card">
+      <label>🔢 PNR (10‑digit table) — enter one digit per cell</label>
+      <div class="pnr-row" id="pnrCellsContainer"></div>
+    </div>
+    <div class="input-card logo-upload">
+      <label>🖼️ UPLOAD YOUR LOGO (PNG)</label>
+      <input type="file" id="logoUpload" accept="image/png">
+      <small style="display: block; margin-top: 5px; color:#aaa;">Logo will appear in letterhead. Leave empty to show text only.</small>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button id="saveBtn" onclick="handleSaveOrUpdate()">💾 SAVE REQUEST</button>
+    <button id="viewHistoryBtn" onclick="showDataOnly()">📋 VIEW HISTORY</button>
+    <button id="printLetterheadBtn" onclick="printLetterhead()">🖨️ PRINT LETTERHEAD</button>
+    <button id="deleteAllBtn" onclick="deleteAllData()">🗑️ DELETE ALL</button>
+  </div>
+
+  <div class="table-container">
+    <table id="dataTable" style="display:none">
+      <thead>
+        <tr><th>SERIAL</th><th>REQUEST OF</th><th>HEADQUARTERS</th><th>JOURNEY DATE</th><th>TRAIN NO</th><th>TRAIN NAME</th><th>PASSENGER NAME</th><th>FROM</th><th>TO</th><th>BERTH</th><th>CLASS</th><th>PASS/UPN</th><th>PURPOSE</th><th>REFERENCE</th><th>MOBILE</th><th>ADDRESS</th><th>PNR</th><th>ACTION</th>麦
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  
+  <!-- New buttons below table -->
+  <div id="historyButtonsContainer" class="history-buttons" style="display: none;">
+    <button id="scanToCloudHistory" onclick="scanToCloud()">☁️ SCAN TO CLOUD</button>
+    <button id="backToUIBtn" onclick="showUIOnly()">◀ BACK TO UI</button>
+  </div>
+  
+</div>
+
+<div id="toastMsg">✅ Action Complete</div>
+
+<script>
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwiiiSbkluhy7uOTytsGTDM-6Qk4rsBmO0Wl9JnEpCMtzg-JGw5QCZrTydOlC0W-FvR/exec";
+
+  let currentID = localStorage.getItem("quotaID") || "admin";
+  let currentPass = localStorage.getItem("quotaPass") || "1234";
+  const MASTER_USER = "NIRAJ KUMAR";
+  const MASTER_PASS = "NIRAJ KUMAR";
+
+  let quotaRecords = JSON.parse(localStorage.getItem("emergency_quota_records")) || [];
+  let editIndex = null;
+  let lastSerial = localStorage.getItem("last_serial_quota") || "";
+
+  let pnrInputs = [];
+
+  let customLogoBase64 = localStorage.getItem("customLogoBase64") || null;
+
+  function getLogoHTML() {
+    const railwayText = '<div class="railway-name">पश्चिम रेलवे<br>Western Railway</div>';
+    if (customLogoBase64) {
+      return `<img src="${customLogoBase64}" alt="Logo" style="width: 75px; height: auto; margin-bottom: 8px;">${railwayText}`;
+    } else {
+      return railwayText;
+    }
+  }
+
+  function setupLogoUpload() {
+    const uploadInput = document.getElementById("logoUpload");
+    uploadInput.addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (file && file.type === "image/png") {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          customLogoBase64 = ev.target.result;
+          localStorage.setItem("customLogoBase64", customLogoBase64);
+          showToast("✅ Logo uploaded and saved");
+        };
+        reader.readAsDataURL(file);
+      } else {
+        alert("Please upload a PNG image file.");
+      }
+    });
+  }
+
+  function buildPnrTable() {
+    const container = document.getElementById("pnrCellsContainer");
+    container.innerHTML = "";
+    pnrInputs = [];
+    for (let i = 0; i < 10; i++) {
+      let inp = document.createElement("input");
+      inp.type = "text";
+      inp.maxLength = 1;
+      inp.classList.add("pnr-digit");
+      inp.setAttribute("data-pos", i);
+      inp.inputMode = "numeric";
+      inp.autocomplete = "off";
+      inp.autocorrect = "off";
+      inp.autocapitalize = "off";
+      inp.spellcheck = false;
+      inp.value = "";
+      inp.addEventListener("input", function(e) {
+        let val = e.target.value;
+        if (val && !/^\d$/.test(val)) e.target.value = "";
+        if (val && i < 9) pnrInputs[i+1].focus();
+      });
+      inp.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (i === 9) handleSaveOrUpdate();
+          else pnrInputs[i+1].focus();
+        }
+      });
+      container.appendChild(inp);
+      pnrInputs.push(inp);
+    }
+  }
+
+  function getPnrFromCells() {
+    let pnrStr = "";
+    for (let inp of pnrInputs) pnrStr += (inp.value.trim() || "0");
+    return pnrStr;
+  }
+
+  function setPnrToCells(pnrString) {
+    let digits = (pnrString || "").toString().padStart(10, '0').slice(0,10).split('');
+    for (let i = 0; i < 10; i++) {
+      if (pnrInputs[i]) pnrInputs[i].value = digits[i] || '';
+    }
+  }
+
+  function clearAllInputs() {
+    document.getElementById("serial").value = "";
+    document.getElementById("requestOf").value = "";
+    document.getElementById("headquarters").value = "";
+    document.getElementById("journeyDate").value = "";
+    document.getElementById("trainNo").value = "";
+    document.getElementById("trainName").value = "";
+    document.getElementById("passengerName").value = "";
+    document.getElementById("stationFrom").value = "";
+    document.getElementById("stationTo").value = "";
+    document.getElementById("berth").value = "";
+    document.getElementById("classType").value = "";
+    document.getElementById("passUpn").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("reference").value = "";
+    document.getElementById("mobile").value = "";
+    document.getElementById("address").value = "";
+    setPnrToCells("");
+    let today = new Date().toISOString().split('T')[0];
+    document.getElementById("journeyDate").value = today;
+    if (editIndex !== null) exitEditMode();
+    showToast("🔄 All input fields cleared");
+    document.getElementById("serial").focus();
+  }
+
+  function sortRecords() {
+    quotaRecords.sort((a,b) => (a.serial || "").localeCompare(b.serial || "", undefined, {numeric:true}));
+  }
+  function persistAndRender() {
+    sortRecords();
+    localStorage.setItem("emergency_quota_records", JSON.stringify(quotaRecords));
+    renderTable();
+  }
+
+  function renderTable() {
+    let tbody = document.getElementById("tableBody");
+    if(!tbody) return;
+    tbody.innerHTML = "";
+    quotaRecords.forEach((item, idx) => {
+      let row = tbody.insertRow();
+      row.insertCell(0).innerText = item.serial || "";
+      row.insertCell(1).innerText = item.requestOf || "";
+      row.insertCell(2).innerText = item.headquarters || "";
+      row.insertCell(3).innerText = item.journeyDate || "";
+      row.insertCell(4).innerText = item.trainNo || "";
+      row.insertCell(5).innerText = item.trainName || "";
+      row.insertCell(6).innerText = item.passengerName || "";
+      row.insertCell(7).innerText = item.stationFrom || "";
+      row.insertCell(8).innerText = item.stationTo || "";
+      row.insertCell(9).innerText = item.berth || "";
+      row.insertCell(10).innerText = item.classType || "";
+      row.insertCell(11).innerText = item.passUpn || "";
+      row.insertCell(12).innerText = item.purpose || "";
+      row.insertCell(13).innerText = item.reference || "";
+      row.insertCell(14).innerText = item.mobile || "";
+      row.insertCell(15).innerText = item.address || "";
+      row.insertCell(16).innerText = item.pnr || "";
+      let actCell = row.insertCell(17);
+      let editBtn = document.createElement("button");
+      editBtn.innerText = "✏️ EDIT";
+      editBtn.style.background = "#3b82f6";
+      editBtn.style.padding = "4px 12px";
+      editBtn.style.borderRadius = "20px";
+      editBtn.style.marginRight = "8px";
+      editBtn.style.fontSize = "0.7rem";
+      editBtn.onclick = (() => enterEditMode(idx));
+      let delBtn = document.createElement("button");
+      delBtn.innerText = "🗑️ DEL";
+      delBtn.style.background = "#ef4444";
+      delBtn.style.padding = "4px 12px";
+      delBtn.style.borderRadius = "20px";
+      delBtn.style.fontSize = "0.7rem";
+      delBtn.onclick = (() => deleteRecord(idx));
+      actCell.appendChild(editBtn);
+      actCell.appendChild(delBtn);
+    });
+  }
+
+  function getFormData() {
+    return {
+      serial: document.getElementById("serial").value.trim().toUpperCase(),
+      requestOf: document.getElementById("requestOf").value.trim().toUpperCase(),
+      headquarters: document.getElementById("headquarters").value.trim().toUpperCase(),
+      journeyDate: document.getElementById("journeyDate").value,
+      trainNo: document.getElementById("trainNo").value.trim().toUpperCase(),
+      trainName: document.getElementById("trainName").value.trim().toUpperCase(),
+      passengerName: document.getElementById("passengerName").value.trim().toUpperCase(),
+      stationFrom: document.getElementById("stationFrom").value.trim().toUpperCase(),
+      stationTo: document.getElementById("stationTo").value.trim().toUpperCase(),
+      berth: document.getElementById("berth").value.trim(),
+      classType: document.getElementById("classType").value.trim().toUpperCase(),
+      passUpn: document.getElementById("passUpn").value.trim().toUpperCase(),
+      purpose: document.getElementById("purpose").value.trim().toUpperCase(),
+      reference: document.getElementById("reference").value.trim().toUpperCase(),
+      mobile: document.getElementById("mobile").value.trim(),
+      address: document.getElementById("address").value.trim().toUpperCase(),
+      pnr: getPnrFromCells()
+    };
+  }
+
+  function setFormData(data) {
+    document.getElementById("serial").value = data.serial || "";
+    document.getElementById("requestOf").value = data.requestOf || "";
+    document.getElementById("headquarters").value = data.headquarters || "";
+    document.getElementById("journeyDate").value = data.journeyDate || "";
+    document.getElementById("trainNo").value = data.trainNo || "";
+    document.getElementById("trainName").value = data.trainName || "";
+    document.getElementById("passengerName").value = data.passengerName || "";
+    document.getElementById("stationFrom").value = data.stationFrom || "";
+    document.getElementById("stationTo").value = data.stationTo || "";
+    document.getElementById("berth").value = data.berth || "";
+    document.getElementById("classType").value = data.classType || "";
+    document.getElementById("passUpn").value = data.passUpn || "";
+    document.getElementById("purpose").value = data.purpose || "";
+    document.getElementById("reference").value = data.reference || "";
+    document.getElementById("mobile").value = data.mobile || "";
+    document.getElementById("address").value = data.address || "";
+    setPnrToCells(data.pnr || "");
+  }
+
+  function validateForm(data) {
+    if(!data.serial) { alert("Serial Number required"); return false; }
+    if(!data.requestOf) { alert("Request Of required"); return false; }
+    if(!data.headquarters) { alert("Headquarters (CSMT/CCG) required"); return false; }
+    if(!data.journeyDate) { alert("Date of Journey required"); return false; }
+    if(!data.trainNo) { alert("Train Number required"); return false; }
+    if(!data.trainName) { alert("Train Name required"); return false; }
+    if(!data.passengerName) { alert("Passenger Name required"); return false; }
+    if(!data.stationFrom || !data.stationTo) { alert("Station From & To required"); return false; }
+    if(!data.berth) { alert("Number of Berth required"); return false; }
+    if(!data.classType) { alert("Class required"); return false; }
+    if(!data.purpose) { alert("Purpose required"); return false; }
+    if(!data.mobile) { alert("Mobile Number required"); return false; }
+    if(!data.address) { alert("Address required"); return false; }
+    if(!data.pnr || data.pnr.length !== 10 || !/^\d{10}$/.test(data.pnr)) { alert("PNR must be exactly 10 digits"); return false; }
+    return true;
+  }
+
+  function validateForCloud(data) {
+    if(!data.serial) { alert("Serial Number required"); return false; }
+    if(!data.pnr || data.pnr.length !== 10 || !/^\d{10}$/.test(data.pnr)) { alert("PNR must be exactly 10 digits"); return false; }
+    return true;
+  }
+
+  function saveData() {
+    let newData = getFormData();
+    if(!validateForm(newData)) return;
+    quotaRecords.push({ ...newData });
+    persistAndRender();
+    localStorage.setItem("last_serial_quota", newData.serial);
+    lastSerial = newData.serial;
+    showToast("✅ Saved locally");
+    document.getElementById("passUpn").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("reference").value = "";
+    document.getElementById("address").value = "";
+    setPnrToCells("");
+    pnrInputs[0].focus();
+    return true;
+  }
+
+  function updateRecord() {
+    let updated = getFormData();
+    if(!validateForm(updated)) return;
+    quotaRecords[editIndex] = { ...updated };
+    persistAndRender();
+    localStorage.setItem("last_serial_quota", updated.serial);
+    showToast("✏️ Updated");
+    exitEditMode();
+    showUIOnly();
+    return true;
+  }
+
+  function handleSaveOrUpdate() { 
+    if(editIndex !== null) updateRecord(); 
+    else saveData(); 
+  }
+
+  async function scanToCloud() {
+    let newData = getFormData();
+    if(!validateForCloud(newData)) return;
+
+    if(editIndex !== null) {
+      quotaRecords[editIndex] = { ...newData };
+      showToast("✏️ Record updated");
+      exitEditMode();
+    } else {
+      quotaRecords.push({ ...newData });
+      showToast("✅ Record saved");
+    }
+    persistAndRender();
+    localStorage.setItem("last_serial_quota", newData.serial);
+    lastSerial = newData.serial;
+
+    document.getElementById("passUpn").value = "";
+    document.getElementById("purpose").value = "";
+    document.getElementById("reference").value = "";
+    document.getElementById("address").value = "";
+    setPnrToCells("");
+    pnrInputs[0].focus();
+
+    const btn = document.getElementById("scanToCloudHistory");
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "☁️ SENDING...";
+    btn.disabled = true;
+    
+    try {
+      showToast("☁️ Sending to cloud...");
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(quotaRecords),
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      showToast("☁️ Sent to Cloud!");
+    } catch (error) {
+      console.error("Cloud send error:", error);
+      showToast("❌ Cloud send failed");
+    } finally {
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+  }
+
+  function escapeHtml(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>]/g, function(m) {
+      if (m === '&') return '&amp;';
+      if (m === '<') return '&lt;';
+      if (m === '>') return '&gt;';
+      return m;
+    });
+  }
+
+  function formatDateDMY(dateStr) {
+    if (!dateStr) return '';
+    const parts = dateStr.split('-');
+    if (parts.length === 3) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return dateStr;
+  }
+
+  const clipboardCheckbox = document.getElementById('clipboardCheckbox');
+  const referenceInput = document.getElementById('reference');
+  clipboardCheckbox.addEventListener('change', async function() {
+    if (this.checked) {
+      try {
+        const text = await navigator.clipboard.readText();
+        referenceInput.value = text.trim().toUpperCase();
+      } catch (err) {}
+    }
+  });
+
+  const requestClipboardCheckbox = document.getElementById('requestClipboardCheckbox');
+  const requestOfInput = document.getElementById('requestOf');
+  requestClipboardCheckbox.addEventListener('change', async function() {
+    if (this.checked) {
+      try {
+        const text = await navigator.clipboard.readText();
+        requestOfInput.value = text.trim().toUpperCase();
+      } catch (err) {}
+    }
+  });
+
+  const passUpnOptionalCheckbox = document.getElementById('passUpnOptionalCheckbox');
+
+  function printLetterhead() {
+    const data = getFormData();
+    if (!data.serial) {
+      alert("Please fill at least Serial Number before printing.");
+      return;
+    }
+
+    let letterheadDateElem = document.getElementById("letterheadDate");
+    let selectedDate = letterheadDateElem.value;
+    if (!selectedDate) {
+      selectedDate = new Date().toISOString().split('T')[0];
+    }
+    const letterheadDateFormatted = formatDateDMY(selectedDate);
+    
+    const journeyDateFormatted = formatDateDMY(data.journeyDate);
+    const pnrDigits = (data.pnr || "0000000000").split('');
+    const isOnDuty = data.purpose && data.purpose.toUpperCase().includes("ON DUTY");
+    const purposeStyle = isOnDuty ? 'font-weight: bold; font-size: 16px;' : '';
+    const showReference = clipboardCheckbox.checked;
+    const referenceRow = showReference ? `<tr><td class="label-col">Reference</td><td colspan="10">${escapeHtml(data.reference)}</td>` : '';
+    
+    const showRequestOf = requestClipboardCheckbox.checked;
+    const requestOfRow = showRequestOf ? `<tr><td class="label-col">Request of</td><td colspan="10">${escapeHtml(data.requestOf)}</td>` : '';
+
+    const showPassUpn = !passUpnOptionalCheckbox.checked;
+    const passUpnRow = showPassUpn ? `<tr><td class="label-col">Pass/UPN(if)</td><td colspan="10">${escapeHtml(data.passUpn)}</td>` : '';
+
+    let hqRaw = data.headquarters || "";
+    let formattedHQ = hqRaw.replace(/SR\./gi, "Sr.");
+
+    let subjectLine = "";
+    if (formattedHQ.includes("CSMT")) {
+      subjectLine = "Sr.DCM/CSMT<br>Sub- Release of Quota";
+    } else if (formattedHQ.includes("CCG")) {
+      subjectLine = "Sr.DCM/CCG<br>Sub- Release of Quota";
+    } else {
+      subjectLine = escapeHtml(formattedHQ) + "<br>Sub- Release of Quota";
+    }
+
+    const logoHTML = getLogoHTML();
+
+    const letterheadHTML = `
+      <!DOCTYPE html>
+      <html lang="hi">
+      <head>
+        <meta charset="UTF-8">
+        <title>Western Railway - Emergency Quota Letterhead</title>
+        <style>
+          body {
+            font-family: "Times New Roman", Times, serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+          }
+          .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm 20mm;
+            margin: auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            color: #000;
+          }
+          .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+          }
+          .logo-section {
+            text-align: center;
+            width: 180px;
+          }
+          .logo-section img {
+            width: 75px;
+            height: auto;
+            margin-bottom: 8px;
+          }
+          .railway-name {
+            color: #d32f2f;
+            font-weight: bold;
+            font-size: 16px;
+            margin-top: 8px;
+            line-height: 1.2;
+          }
+          .address-section {
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.4;
+            font-weight: bold;
+          }
+          .meta-info {
+            display: flex;
+            justify-content: space-between;
+            margin: 15px 0 25px 0;
+            font-size: 15px;
+          }
+          .subject-block {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 15px;
+            line-height: 1.5;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+          }
+          table, td {
+            border: 1px solid black;
+          }
+          td {
+            padding: 10px;
+            font-size: 15px;
+            height: 25px;
+            text-align: center;
+          }
+          .label-col {
+            width: 30%;
+            text-align: left !important;
+          }
+          .pnr-row td {
+            padding: 0;
+            text-align: center;
+            height: 55px;
+            width: 7%;
+            font-size: 24px;
+            font-weight: bold;
+          }
+          .pnr-label {
+            text-align: left !important;
+            padding-left: 10px !important;
+            width: 30% !important;
+            font-weight: normal;
+            font-size: 15px;
+          }
+          .footer-sign {
+            margin-top: 60px;
+            float: right;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 1.6;
+            min-width: 250px;
+          }
+          @media print {
+            body { background: none; padding: 0; }
+            .page { box-shadow: none; margin: 0; border: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="page">
+          <div class="header">
+            <div class="logo-section">
+              ${logoHTML}
+            </div>
+            <div class="address-section">
+              Office of the Chief Workshop Manager<br>
+              Carriage Repair Workshop<br>
+              N.M. Joshi Marg, Lower Parel<br>
+              Mumbai-400013<br>
+              Phone : 022-67640012<br>
+              E-mail : acmtwr@gmail.com
+            </div>
+          </div>
+
+          <div class="meta-info">
+            <div>EQ NO:- ${escapeHtml(data.serial)}</div>
+            <div>Date : ${letterheadDateFormatted}</div>
+          </div>
+
+          <div class="subject-block">
+            ${subjectLine}
+          </div>
+
+          <p style="font-size: 15px;">You are requested to release the berth from quota, in order to enable the journey</p>
+
+          <table>
+            ${requestOfRow}
+            <tr><td class="label-col">Train No & Name</td><td colspan="10">${escapeHtml(data.trainNo)} / ${escapeHtml(data.trainName)}</td></tr>
+            <tr><td class="label-col">Date of Journey</td><td colspan="10">${escapeHtml(journeyDateFormatted)}</td></tr>
+            <tr><td class="label-col">Class</td><td colspan="10">${escapeHtml(data.classType)}</td></tr>
+            <tr><td class="label-col">No. of Seat/Berth</td><td colspan="10">${escapeHtml(data.berth)}</td></tr>
+            <tr><td class="label-col">Station from</td><td colspan="10">${escapeHtml(data.stationFrom)}</td></tr>
+            <tr><td class="label-col">Station to</td><td colspan="10">${escapeHtml(data.stationTo)}</td></tr>
+            <tr><td class="label-col">Name of Passenger</td><td colspan="10">${escapeHtml(data.passengerName)}</td></tr>
+            <tr><td class="label-col">Purpose</td><td colspan="10"><span style="${purposeStyle}">${escapeHtml(data.purpose)}</span></td></tr>
+            ${referenceRow}
+            ${passUpnRow}
+            <tr><td class="label-col">Mobile number</td><td colspan="10">${escapeHtml(data.mobile)}</td></tr>
+            <tr><td class="label-col">Address</td><td colspan="10">${escapeHtml(data.address)}</td></tr>
+            <tr class="pnr-row">
+              <td class="pnr-label">PNR No.</td>
+              ${pnrDigits.map(d => `<td style="text-align:center; font-weight:bold;">${escapeHtml(d)}</td>`).join('')}
+            </tr>
+          </table>
+
+          <div class="footer-sign">
+            (MANOJ KUMAR TUNGARIA)<br>
+            ACMT/PL<br>
+            CUG 9004490467
+          </div>
+        </div>
+      </body>
+      </html>`;
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'absolute';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = 'none';
+    document.body.appendChild(iframe);
+    const iframeDoc = iframe.contentWindow.document;
+    iframeDoc.open();
+    iframeDoc.write(letterheadHTML);
+    iframeDoc.close();
+    iframe.onload = function() {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => { if (document.body.contains(iframe)) document.body.removeChild(iframe); }, 1000);
+    };
+    setTimeout(() => {
+      if (iframe.contentWindow) {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+        setTimeout(() => { if (document.body.contains(iframe)) document.body.removeChild(iframe); }, 1000);
+      }
+    }, 500);
+  }
+
+  function deleteAllData() {
+    if(!confirm("⚠️ DELETE ALL RECORDS? This cannot be undone.")) return;
+    let pwd = prompt("Enter Password to confirm deletion:");
+    if (pwd === null) return;
+    if(pwd === currentPass || pwd === MASTER_PASS) {
+      quotaRecords = [];
+      persistAndRender();
+      localStorage.removeItem("last_serial_quota");
+      lastSerial = "";
+      clearAllInputs();
+      showToast("🗑️ ALL DATA DELETED");
+      if(document.getElementById("dataTable").style.display !== "none") renderTable();
+    } else {
+      alert("❌ Wrong password! Deletion cancelled.");
+    }
+  }
+
+  function enterEditMode(idx) {
+    showUIOnly();
+    let rec = quotaRecords[idx];
+    editIndex = idx;
+    setFormData(rec);
+    document.getElementById("saveBtn").innerHTML = "🔄 UPDATE REQUEST";
+    document.getElementById("saveBtn").style.background = "#fbbf24";
+    document.querySelectorAll('.input-card').forEach(c => c.classList.add('edit-mode-highlight'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById("serial").focus();
+  }
+
+  function exitEditMode() {
+    editIndex = null;
+    document.getElementById("saveBtn").innerHTML = "💾 SAVE REQUEST";
+    document.getElementById("saveBtn").style.background = "#38bdf8";
+    document.querySelectorAll('.input-card').forEach(c => c.classList.remove('edit-mode-highlight'));
+  }
+
+  function deleteRecord(idx) {
+    if(confirm("Delete this entry?")) {
+      quotaRecords.splice(idx,1);
+      persistAndRender();
+      showToast("Deleted");
+      if(quotaRecords.length === 0 && document.getElementById("dataTable").style.display !== "none") renderTable();
+    }
+  }
+
+  function showDataOnly() {
+    document.querySelector('header').style.display = 'none';
+    document.getElementById('inputGrids').style.display = 'none';
+    document.querySelector('.btn-row').style.display = 'none';
+    document.getElementById('settingsBtn').style.display = 'none';
+    document.getElementById('dataTable').style.display = 'table';
+    document.getElementById('historyButtonsContainer').style.display = 'flex';
+    renderTable();
+  }
+
+  function showUIOnly() {
+    document.querySelector('header').style.display = '';
+    document.getElementById('inputGrids').style.display = '';
+    document.querySelector('.btn-row').style.display = 'flex';
+    document.getElementById('settingsBtn').style.display = '';
+    document.getElementById('dataTable').style.display = 'none';
+    document.getElementById('historyButtonsContainer').style.display = 'none';
+    if(editIndex !== null) exitEditMode();
+  }
+
+  function setupKeyboardNav() {
+    const regularIds = ["serial", "requestOf", "headquarters", "journeyDate", "trainNo", "trainName", "passengerName", "stationFrom", "stationTo", "berth", "classType", "passUpn", "purpose", "reference", "mobile", "address"];
+    for(let i=0; i<regularIds.length; i++) {
+      let field = document.getElementById(regularIds[i]);
+      if(!field) continue;
+      field.addEventListener("keypress", function(e) {
+        if(e.key === "Enter") {
+          e.preventDefault();
+          if(i === regularIds.length-1) pnrInputs[0].focus();
+          else {
+            let nextId = regularIds[i+1];
+            let nextField = document.getElementById(nextId);
+            if(nextField) nextField.focus();
+          }
+        }
+      });
+    }
+  }
+
+  function loadLastSerial() { if(lastSerial) document.getElementById("serial").value = lastSerial; }
+  function setDefaultDate() {
+    let today = new Date().toISOString().split('T')[0];
+    if(!document.getElementById("journeyDate").value) {
+      document.getElementById("journeyDate").value = today;
+    }
+    if(!document.getElementById("letterheadDate").value) {
+      document.getElementById("letterheadDate").value = today;
+    }
+  }
+
+  function checkLogin() {
+    const userField = document.getElementById('userInput'), passField = document.getElementById('passInput'), errorDiv = document.getElementById('errorMsg');
+    if((userField.value === MASTER_USER && passField.value === MASTER_PASS) || (userField.value === currentID && passField.value === currentPass)) {
+      document.getElementById('loginOverlay').style.display = 'none';
+      loadLastSerial();
+      setDefaultDate();
+      setupKeyboardNav();
+      showUIOnly();
+      renderTable();
+      document.getElementById("serial").focus();
+    } else { errorDiv.style.display = 'block'; setTimeout(()=>errorDiv.style.display='none',2000); }
+  }
+  function openSettings() { document.getElementById('settingsPanel').style.display = 'block'; }
+  function closeSettings() { document.getElementById('settingsPanel').style.display = 'none'; }
+  function saveNewPass() {
+    let newId = document.getElementById('newID').value.trim(), newPass = document.getElementById('newPass').value.trim();
+    if(newId && newPass) { localStorage.setItem("quotaID",newId); localStorage.setItem("quotaPass",newPass); currentID=newId; currentPass=newPass; alert("✅ Updated"); closeSettings(); }
+    else alert("Both fields required");
+  }
+  function showToast(msg) { 
+    let t=document.getElementById('toastMsg'); 
+    t.innerText=msg; 
+    t.style.display='block'; 
+    setTimeout(()=>t.style.display='none',2500); 
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    buildPnrTable();
+    persistAndRender();
+    setupLogoUpload();
+    document.querySelectorAll('.dashboard input:not(.pnr-digit)').forEach(inp => {
+      inp.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+      });
+    });
+  });
+</script>
+</body>
+</html>
