@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vickers Hardness Testing Software | Western Railway</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0f1a 0%, #0f1622 25%, #1a1f2e 50%, #0f1622 75%, #0a0f1a 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 24px;
+            position: relative;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(15, 118, 110, 0.12) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(25, 30, 45, 0.95) 0%, rgba(18, 22, 35, 0.98) 100%);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(15, 118, 110, 0.3);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 35px 55px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(15, 118, 110, 0.5);
+        }
+        .login-container, .input-container, .main-container { max-width: 1300px; margin: 0 auto; position: relative; z-index: 1; }
+        .card {
+            background: linear-gradient(135deg, rgba(30, 36, 55, 0.95) 0%, rgba(20, 25, 40, 0.98) 100%);
+            backdrop-filter: blur(10px);
+            border-radius: 28px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(15, 118, 110, 0.3);
+            overflow: hidden;
+            padding: 32px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .card:hover { box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(15, 118, 110, 0.5); }
+        .login-card {
+            max-width: 480px;
+            margin: 80px auto;
+            text-align: center;
+            background: linear-gradient(145deg, rgba(25, 30, 48, 0.98), rgba(18, 22, 38, 0.98));
+            border-radius: 40px;
+            padding: 48px 42px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(15, 118, 110, 0.4);
+        }
+        .login-card h2 {
+            background: linear-gradient(135deg, #fff, #0f766e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+            font-size: 32px;
+            font-weight: 800;
+        }
+        /* ========== ONLY CHANGE: CENTER ALIGN TEXT INSIDE ALL INPUTS, SELECTS & TEXTAREAS ========== */
+        input, select, textarea {
+            width: 100%;
+            padding: 14px 18px;
+            margin: 10px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            font-size: 14px;
+            transition: all 0.25s;
+            font-family: 'Inter', sans-serif;
+            background: rgba(10, 14, 23, 0.8);
+            color: #e2e8f0;
+            text-align: center;
+        }
+        input:focus, select:focus {
+            border-color: #0f766e;
+            outline: none;
+            box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.2);
+            background: rgba(15, 20, 35, 0.95);
+        }
+        button {
+            background: linear-gradient(135deg, #0f766e 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(15, 118, 110, 0.3);
+        }
+        button:hover {
+            background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15, 118, 110, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #1e3a5f 0%, #2c5f8a 100%);
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
+        }
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #2c5f8a 0%, #1e3a5f 100%);
+        }
+        .reset-btn {
+            background: linear-gradient(135deg, #b91c1c 0%, #dc2626 100%);
+        }
+        .reset-btn:hover {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+        .indentation-card {
+            background: linear-gradient(135deg, rgba(35, 42, 62, 0.9) 0%, rgba(25, 30, 48, 0.95) 100%);
+            border-left: 5px solid #0f766e;
+            padding: 24px;
+            margin: 24px 0;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .indentation-card:hover {
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+            transform: translateX(5px);
+            border-left-width: 6px;
+        }
+        .indentation-title i { color: #0f766e; }
+        .indentation-stats .stat-value { color: #0f766e; }
+        .live-preview {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.08) 100%);
+            padding: 18px;
+            border-radius: 18px;
+            margin: 20px 0;
+            text-align: center;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .live-preview strong { color: #22c55e; }
+        .signature-section {
+            background: linear-gradient(135deg, rgba(100, 116, 139, 0.15) 0%, rgba(71, 85, 105, 0.08) 100%);
+            padding: 24px;
+            border-radius: 20px;
+            margin-top: 24px;
+            border: 1px solid rgba(100, 116, 139, 0.4);
+        }
+        .signature-section h4 { color: #94a3b8; margin-bottom: 18px; font-size: 18px; font-weight: 700; }
+        .signature-section h4 i { color: #0f766e; }
+        .signature-row { display: flex; gap: 24px; flex-wrap: wrap; }
+        .signature-row > div { flex: 1; }
+        .two-columns { display: flex; gap: 24px; flex-wrap: wrap; }
+        .two-columns > div { flex: 1; }
+        .nav-buttons, .action-buttons, .common-buttons { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+        .nav-buttons button, .action-buttons button, .common-buttons button { flex: 1; }
+        .hidden { display: none; }
+        
+        
+        .logo-upload-area {
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.3) 0%, rgba(0, 0, 0, 0.2) 100%);
+            padding: 15px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            text-align: center;
+            border: 1px dashed rgba(15, 118, 110, 0.5);
+        }
+        .logo-row {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .logo-box {
+            text-align: center;
+            flex: 0 0 auto;
+        }
+        .logo-box label {
+            font-weight: 600;
+            color: #0f766e;
+            cursor: pointer;
+            background: rgba(0,0,0,0.4);
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 1px solid #0f766e;
+            display: inline-block;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+        .logo-box label:hover {
+            background: #0f766e;
+            color: white;
+        }
+        .logo-preview {
+            margin-top: 12px;
+            text-align: center;
+        }
+        .logo-preview img {
+            max-height: 60px;
+            border-radius: 12px;
+            padding: 4px;
+            background: rgba(0,0,0,0.3);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .logo-preview span {
+            display: block;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        /* end logo area */
+        
+        .toast-msg {
+            position: fixed; bottom: 30px; right: 30px; background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white; padding: 14px 28px; border-radius: 50px; z-index: 1000; animation: fadeInOut 3s ease; font-weight: 600; box-shadow: 0 10px 30px rgba(34, 197, 94, 0.3);
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(20px); }
+            15% { opacity: 1; transform: translateY(0); }
+            85% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(20px); }
+        }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: linear-gradient(145deg, rgba(25, 30, 48, 0.98), rgba(18, 22, 38, 0.98)); width: 90%; max-width: 1000px; max-height: 85%; border-radius: 28px; overflow: hidden; animation: slideIn 0.3s ease; box-shadow: 0 30px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(15, 118, 110, 0.4); }
+        @keyframes slideIn { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { background: linear-gradient(135deg, #1e3a5f, #0f2b3f); color: white; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 20px; }
+        .modal-close { background: none; border: none; color: white; font-size: 28px; cursor: pointer; width: auto; padding: 0 10px; transition: transform 0.2s; }
+        .modal-close:hover { transform: scale(1.1); }
+        .modal-body { padding: 24px; max-height: 60vh; overflow-y: auto; }
+        .history-item { background: rgba(35, 42, 62, 0.8); border-left: 5px solid #0f766e; padding: 18px; margin-bottom: 18px; border-radius: 16px; transition: all 0.2s; }
+        .history-item:hover { background: rgba(45, 52, 72, 0.9); transform: translateX(4px); }
+        .history-item h4 { color: #fff; margin-bottom: 12px; font-size: 18px; }
+        .history-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; font-size: 13px; color: #94a3b8; }
+        .history-actions { margin-top: 15px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .history-indent-details { margin-top: 12px; font-size: 12px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 12px; }
+        .history-indent-details table { width: 100%; border-collapse: collapse; color: #cbd5e1; }
+        .history-indent-details th, .history-indent-details td { border: 1px solid #334155; padding: 6px; text-align: center; }
+        .no-history { text-align: center; padding: 50px; color: #94a3b8; }
+        .btn-clear { background: #dc3545; margin-top: 10px; box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3); }
+        .btn-clear:hover { background: #c82333; }
+        .btn-edit, .btn-load { background: #f59e0b; color: white; width: auto; padding: 8px 18px; font-size: 13px; border-radius: 40px; box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3); }
+        .btn-edit:hover, .btn-load:hover { background: #d97706; }
+        .btn-print-history { background: #0891b2; color: white; width: auto; padding: 8px 18px; font-size: 13px; border-radius: 40px; box-shadow: 0 2px 10px rgba(8, 145, 178, 0.3); }
+        .btn-print-history:hover { background: #0e7490; }
+        .btn-history { background: #6c757d; }
+        .btn-history:hover { background: #5a6268; }
+        h2, h3 { color: #fff; }
+        h2 i, h3 i { margin-right: 10px; color: #0f766e; }
+        label { color: #94a3b8; }
+        label i { margin-right: 8px; color: #0f766e; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #0f766e; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0d9488; }
+        p { color: #94a3b8; }
+        small { color: #64748b; }
+        .tabs { display: flex; gap: 12px; margin-bottom: 24px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 12px; }
+        .tab-btn { background: rgba(30, 58, 95, 0.6); color: white; border: none; padding: 10px 24px; border-radius: 40px; font-weight: 600; cursor: pointer; width: auto; transition: all 0.2s; }
+        .tab-btn.active { background: #0f766e; box-shadow: 0 0 12px rgba(15, 118, 110, 0.5); }
+        .tab-btn:hover { background: #0f766e; }
+        .second-sample-form { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 24px; margin-top: 24px; border: 1px solid rgba(15, 118, 110, 0.3); }
+        
+        ::placeholder {
+            text-align: center;
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="login-container">
+        <div class="card login-card">
+            <div id="loginLogoPreview"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IR_Logo.svg/1200px-IR_Logo.svg.png" width="80" style="margin-bottom:20px;"></div>
+            <h2><i class="fas fa-microscope"></i> Vickers Hardness</h2>
+            <p style="margin-bottom:28px;">Western Railway - C&M Lab</p>
+            <input type="text" id="username" placeholder="Username" value="admin">
+            <input type="password" id="password" placeholder="Password" value="1234">
+            <button onclick="doLogin()"><i class="fas fa-sign-in-alt"></i> Login</button>
+          
+        </div>
+    </div>
+
+    <!-- INPUT SCREEN – NORMAL BUTTONS -->
+    <div id="inputScreen" class="input-container hidden">
+        <div class="card">
+            <h2><i class="fas fa-flask"></i> Test Information Entry</h2>
+            <p style="margin-bottom:20px;">please fill sample details correctly</p>
+            
+          
+            <div class="logo-upload-area">
+                <div class="logo-row">
+                    <div class="logo-box">
+                        <label for="logoUploadLeft"><i class="fas fa-image"></i> Left Logo</label>
+                        <input type="file" id="logoUploadLeft" accept="image/png,image/jpeg" style="display:none;" onchange="handleLeftLogoUpload(event)">
+                        <div class="logo-preview">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IR_Logo.svg/1200px-IR_Logo.svg.png" id="previewLogoLeft">
+                            <span>Left Logo</span>
+                        </div>
+                    </div>
+                    <div class="logo-box">
+                        <label for="logoUploadRight"><i class="fas fa-image"></i> Right Logo</label>
+                        <input type="file" id="logoUploadRight" accept="image/png,image/jpeg" style="display:none;" onchange="handleRightLogoUpload(event)">
+                        <div class="logo-preview">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IR_Logo.svg/1200px-IR_Logo.svg.png" id="previewLogoRight">
+                            <span>Right Logo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="sample1Fields">
+                <div class="two-columns">
+                    <div><label><i class="fas fa-cube"></i> Sample 1 Description *</label><input type="text" id="sampleDesc" placeholder="e.g., bolt/nut/fastner"><label><i class="fas fa-tag"></i> Stamping / ID Mark *</label><input type="text" id="stampingVal" placeholder="e.g., TVS 8.8"><label><i class="fas fa-barcode"></i> Lab No.</label><input type="text" id="labSerial" placeholder="e.g., F/089/06/2026"></div>
+                    <div><label><i class="fas fa-book-open"></i> Log Book Page No. *</label><input type="text" id="logPage" placeholder="Page Number With serial"><label><i class="fas fa-calendar-alt"></i> Log Book Entry Date *</label><input type="text" id="logDate" placeholder="dd/mm/yyyy" autocomplete="off"><label><i class="fas fa-file-signature"></i> Date of Report *</label><input type="text" id="reportDate" placeholder="dd/mm/yyyy" autocomplete="off"></div>
+                </div>
+                <div class="load-field"><label><i class="fas fa-weight-hanging"></i> Test Load (kgf) *</label><input type="number" id="testLoad" value="30" step="any"><small>Vickers hardness test load (standard: 30 kgf for metals)</small></div>
+            </div>
+            <div id="secondSampleContainer" style="display:none;">
+                <div class="second-sample-form"><h3><i class="fas fa-plus-circle"></i> Second Sample Details</h3>
+                    <div class="two-columns">
+                        <div><label><i class="fas fa-cube"></i> Sample 2 Description *</label><input type="text" id="sampleDesc2" placeholder="e.g., Axle Steel Grade-2"><label><i class="fas fa-tag"></i> Stamping / ID Mark *</label><input type="text" id="stampingVal2" placeholder="e.g., WR/23/457"><label><i class="fas fa-barcode"></i> Lab / Serial No.</label><input type="text" id="labSerial2" placeholder="e.g., 2025/002"></div>
+                        <div><label><i class="fas fa-book-open"></i> Log Book Page No. *</label><input type="text" id="logPage2" placeholder="Page Number"><label><i class="fas fa-calendar-alt"></i> Log Book Entry Date *</label><input type="text" id="logDate2" placeholder="dd/mm/yyyy" autocomplete="off"><label><i class="fas fa-file-signature"></i> Date of Report *</label><input type="text" id="reportDate2" placeholder="dd/mm/yyyy" autocomplete="off"></div>
+                    </div>
+                    <div class="load-field"><label><i class="fas fa-weight-hanging"></i> Test Load (kgf) for Sample 2 *</label><input type="number" id="testLoad2" value="30" step="any"></div>
+                </div>
+            </div>
+            <div class="signature-section">
+                <h4><i class="fas fa-pen"></i> fill name of testing authority</h4>
+                <div class="signature-row">
+                    <div><label><i class="fas fa-user-check"></i> Tested By (Name) *</label><input type="text" id="testedByName" placeholder="RAJDEEP"></div>
+                    <div><label><i class="fas fa-user-tie"></i> Technical Manager (Name) *</label><input type="text" id="tmName" placeholder="RAJA KUMAR"></div>
+                </div>
+            </div>
+            <button onclick="saveSampleInfoAndProceed()" style="margin-bottom:20px;"><i class="fas fa-arrow-right"></i> Next: Start Hardness Test →</button>
+            <div class="common-buttons">
+                <button class="btn-secondary" onclick="saveToLocal()"><i class="fas fa-save"></i> Save Session</button>
+                <button onclick="sendToGoogleSheets()" style="background:#0288d1;"><i class="fab fa-google"></i> Send to Sheet</button>
+                <button onclick="generateAndPrintReport()" style="background:#2e7d32;"><i class="fas fa-print"></i> Print Report</button>
+                <button class="btn-history" onclick="showHistory()"><i class="fas fa-history"></i> View History</button>
+                <button class="reset-btn" onclick="resetToFreshEntry()"><i class="fas fa-plus-circle"></i> Fresh Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SCREEN – ACTION BUTTONS + NAV BUTTONS -->
+    <div id="mainScreen" class="main-container hidden">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap;"><h2><i class="fas fa-microscope"></i> Vickers Hardness Test</h2><span style="background:linear-gradient(135deg,#0f766e,#0d9488); padding:8px 18px; border-radius:40px; font-size:12px; font-weight:600;"><i class="fas fa-flask"></i> Session ID: <span id="sessionId">-</span></span></div>
+            <div id="tabsContainer" class="tabs"></div>
+            <div id="indentationsContainer"></div>
+            <div class="live-preview"><strong><i class="fas fa-chart-line"></i> Current Sample Average:</strong> <span id="avgPreview">--</span> <span id="loadPreview">Load: -- kgf</span></div>
+            <div class="action-buttons">
+                <button class="btn-secondary" onclick="saveToLocal()"><i class="fas fa-save"></i> Save Session</button>
+                <button onclick="sendToGoogleSheets()" style="background:#0288d1;"><i class="fab fa-google"></i> Send to Sheet</button>
+                <button onclick="generateAndPrintReport()" style="background:#2e7d32;"><i class="fas fa-print"></i> Print Report</button>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn-secondary" onclick="resetCurrentSampleIndents()"><i class="fas fa-undo-alt"></i> Reset Current Indents</button>
+                <button class="btn-history" onclick="showHistory()"><i class="fas fa-history"></i> View History</button>
+                <button class="reset-btn" onclick="resetToFreshEntry()"><i class="fas fa-plus-circle"></i> Fresh Entry</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- History Modal -->
+<div id="historyModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header"><h3><i class="fas fa-history"></i> Saved Sessions</h3><button class="modal-close" onclick="closeHistory()">&times;</button></div>
+        <div class="modal-body" id="historyBody">Loading...</div>
+        <div style="padding:18px;"><button class="btn-clear" onclick="clearAllHistory()">Clear All History</button></div>
+    </div>
+</div>
+
+<script>
+    // ========== GOOGLE SHEETS WEB APP URL ==========
+    const MY_GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbxMsdJNeHDcz--Z3ADpXJdSrjpY13vhuGjk3DMCea1Ft38_hvxRR0sIiDt7nQ83NZXHfA/exec";
+
+    // ---------- GLOBAL DATA ----------
+    let customLogoLeft = "https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IR_Logo.svg/1200px-IR_Logo.svg.png";
+    let customLogoRight = "https://upload.wikimedia.org/wikipedia/en/thumb/4/45/IR_Logo.svg/1200px-IR_Logo.svg.png";
+    let samples = [];
+    let currentSampleIdx = 0;
+    let commonFields = { testedByName: "", tmName: "" };
+    let sessionId = Date.now();
+    let editingId = null;
+    let autoSaveTimer = null;
+
+    // Helper: convert dd/mm/yyyy to yyyy-mm-dd (for internal storage)
+    function toISODate(dateStr) {
+        if (!dateStr || dateStr.trim() === "") return "";
+        let parts = dateStr.split('/');
+        if (parts.length === 3) {
+            let dd = parts[0].padStart(2, '0');
+            let mm = parts[1].padStart(2, '0');
+            let yyyy = parts[2];
+            return `${yyyy}-${mm}-${dd}`;
+        }
+        return dateStr;
+    }
+    // Helper: convert yyyy-mm-dd to dd/mm/yyyy (for display)
+    function toDisplayDate(isoDate) {
+        if (!isoDate || isoDate.trim() === "") return "";
+        let parts = isoDate.split('-');
+        if (parts.length === 3) {
+            let yyyy = parts[0];
+            let mm = parts[1];
+            let dd = parts[2];
+            return `${dd}/${mm}/${yyyy}`;
+        }
+        return isoDate;
+    }
+
+    // ---------- AUTO-SAVE FUNCTIONS ----------
+    function autoSaveCurrentState() {
+        if (!samples.length && !commonFields.testedByName && !commonFields.tmName) return;
+        const autoSaveData = {
+            timestamp: Date.now(),
+            samples: samples.map(s => ({
+                desc: s.desc, stamping: s.stamping, labSerial: s.labSerial,
+                logPage: s.logPage, logDate: s.logDate, reportDate: s.reportDate,
+                testLoad: s.testLoad,
+                indents: s.indents.map(ind => ({ d1: ind.d1||'', d2: ind.d2||'' }))
+            })),
+            common: commonFields,
+            sessionId: sessionId,
+            editingId: editingId
+        };
+        localStorage.setItem('vickers_autosave', JSON.stringify(autoSaveData));
+    }
+
+    function restoreAutoSave() {
+        const autoData = localStorage.getItem('vickers_autosave');
+        if (autoData && autoData !== "undefined") {
+            try {
+                const data = JSON.parse(autoData);
+                if (data.samples && data.samples.length) {
+                    if (confirm("पिछला unsaved test data मिला है. क्या आप उसे restore करना चाहते हैं? (Last auto-saved: " + new Date(data.timestamp).toLocaleString() + ")")) {
+                        samples = data.samples.map(s => ({ ...s, indents: s.indents.map(ind => ({ d1: ind.d1||'', d2: ind.d2||'' })) }));
+                        commonFields = data.common;
+                        sessionId = data.sessionId;
+                        editingId = data.editingId || null;
+                        currentSampleIdx = 0;
+                        if (!document.getElementById('mainScreen').classList.contains('hidden')) {
+                            renderTabs();
+                            renderIndentationCards();
+                        } else if (!document.getElementById('inputScreen').classList.contains('hidden')) {
+                            if (samples[0]) {
+                                document.getElementById('sampleDesc').value = samples[0].desc;
+                                document.getElementById('stampingVal').value = samples[0].stamping;
+                                document.getElementById('labSerial').value = samples[0].labSerial;
+                                document.getElementById('logPage').value = samples[0].logPage;
+                                document.getElementById('logDate').value = toDisplayDate(samples[0].logDate);
+                                document.getElementById('reportDate').value = toDisplayDate(samples[0].reportDate);
+                                document.getElementById('testLoad').value = samples[0].testLoad;
+                            }
+                            let secondContainer = document.getElementById('secondSampleContainer');
+                            let addBtn = document.querySelector('#sample1Fields + button');
+                            if (samples.length > 1) {
+                                secondContainer.style.display = 'block';
+                                if (addBtn) addBtn.style.display = 'none';
+                                let s2 = samples[1];
+                                document.getElementById('sampleDesc2').value = s2.desc;
+                                document.getElementById('stampingVal2').value = s2.stamping;
+                                document.getElementById('labSerial2').value = s2.labSerial;
+                                document.getElementById('logPage2').value = s2.logPage;
+                                document.getElementById('logDate2').value = toDisplayDate(s2.logDate);
+                                document.getElementById('reportDate2').value = toDisplayDate(s2.reportDate);
+                                document.getElementById('testLoad2').value = s2.testLoad;
+                            } else {
+                                secondContainer.style.display = 'none';
+                                if (addBtn) addBtn.style.display = 'block';
+                            }
+                            document.getElementById('testedByName').value = commonFields.testedByName;
+                            document.getElementById('tmName').value = commonFields.tmName;
+                        }
+                        showToast("✅ Auto-saved data restored");
+                        localStorage.removeItem('vickers_autosave');
+                    }
+                }
+            } catch(e) { console.warn("Auto-restore failed", e); }
+        }
+    }
+
+    function startAutoSaveTimer() {
+        if (autoSaveTimer) clearInterval(autoSaveTimer);
+        autoSaveTimer = setInterval(() => {
+            if (samples.length || commonFields.testedByName || commonFields.tmName) {
+                autoSaveCurrentState();
+            }
+        }, 30000);
+    }
+
+    function autoFillSecondSample() {
+        const logPageVal = document.getElementById('logPage').value;
+        const logDateVal = document.getElementById('logDate').value;
+        const reportDateVal = document.getElementById('reportDate').value;
+        if (logPageVal) document.getElementById('logPage2').value = logPageVal;
+        if (logDateVal) document.getElementById('logDate2').value = logDateVal;
+        if (reportDateVal) document.getElementById('reportDate2').value = reportDateVal;
+    }
+
+    function computeHV(d1, d2, loadKgf) {
+        if(!d1 || !d2 || d1 == 0 || d2 == 0) return null;
+        const avgDiag_mm = (parseFloat(d1) + parseFloat(d2)) / 2;
+        if(avgDiag_mm <= 0) return null;
+        let hv = (1.854 * parseFloat(loadKgf)) / (avgDiag_mm * avgDiag_mm);
+        return Math.round(hv);
+    }
+
+    function showToast(msg, duration=3000) {
+        let toast = document.createElement('div');
+        toast.className = 'toast-msg';
+        toast.innerHTML = '<i class="fas fa-check-circle"></i> ' + msg;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), duration);
+    }
+
+    function renderIndentationCards() {
+        const container = document.getElementById('indentationsContainer');
+        if(!container || !samples.length) return;
+        const sample = samples[currentSampleIdx];
+        let html = '';
+        for(let i=1;i<=3;i++) {
+            const ind = sample.indents[i-1];
+            html += `<div class="indentation-card"><div class="indentation-title">${i===1?'①':i===2?'②':'③'} Indentation ${i}</div>
+                <div class="two-columns"><div><label>D1 (mm)</label><input type="number" step="any" id="d1_${i}" value="${ind.d1||''}" oninput="updateIndent(${i},'d1',this.value)"></div>
+                <div><label>D2 (mm)</label><input type="number" step="any" id="d2_${i}" value="${ind.d2||''}" oninput="updateIndent(${i},'d2',this.value)"></div></div>
+                <div class="indentation-stats"><span>Avg Diagonal: <span id="avg_${i}" class="stat-value">--</span> mm</span>
+                <span>% Diff: <span id="diff_${i}" class="stat-value">--</span>%</span>
+                <span>HV: <span id="hv_${i}" class="stat-value">--</span></span></div></div>`;
+        }
+        container.innerHTML = html;
+        for(let i=1;i<=3;i++) updateIndentStats(i);
+        updateAllStats();
+        autoSaveCurrentState();
+    }
+
+    function updateIndent(idx, field, val) {
+        samples[currentSampleIdx].indents[idx-1][field] = val;
+        updateIndentStats(idx);
+        updateAllStats();
+        autoSaveCurrentState();
+    }
+
+    function updateIndentStats(idx) {
+        const s = samples[currentSampleIdx];
+        let d1 = parseFloat(s.indents[idx-1].d1);
+        let d2 = parseFloat(s.indents[idx-1].d2);
+        let load = parseFloat(s.testLoad || 30);
+        let avgSpan = document.getElementById(`avg_${idx}`);
+        let diffSpan = document.getElementById(`diff_${idx}`);
+        let hvSpan = document.getElementById(`hv_${idx}`);
+        if(isNaN(d1) || isNaN(d2) || d1<=0 || d2<=0) {
+            if(avgSpan) avgSpan.innerText = '--';
+            if(diffSpan) diffSpan.innerText = '--';
+            if(hvSpan) hvSpan.innerText = '--';
+            return;
+        }
+        let avg = ((d1+d2)/2).toFixed(3);
+        let diff = ((Math.abs(d1-d2)/((d1+d2)/2))*100).toFixed(2);
+        let hv = computeHV(d1,d2,load);
+        avgSpan.innerText = avg;
+        diffSpan.innerText = diff;
+        hvSpan.innerText = hv !== null ? hv : '--';
+    }
+
+    function updateAllStats() {
+        const s = samples[currentSampleIdx];
+        if(!s) return;
+        let hvVals = [];
+        for(let i=0;i<3;i++) {
+            let hv = computeHV(s.indents[i].d1, s.indents[i].d2, s.testLoad);
+            if(hv !== null && !isNaN(hv)) hvVals.push(hv);
+        }
+        let avgText = 'Average HV: --';
+        if(hvVals.length) {
+            let sum = hvVals.reduce((a,b)=>a+b,0);
+            let avg = sum / hvVals.length;
+            avgText = `Average HV: ${avg.toFixed(2)} HV (${hvVals.length}/3 valid)`;
+        }
+        document.getElementById('avgPreview').innerHTML = avgText;
+        document.getElementById('loadPreview').innerHTML = `Load: ${s.testLoad} kgf`;
+        document.getElementById('sessionId').innerText = sessionId;
+    }
+
+    function renderTabs() {
+        const container = document.getElementById('tabsContainer');
+        if(!container) return;
+        let html = '';
+        samples.forEach((s,idx) => { html += `<button class="tab-btn ${idx===currentSampleIdx?'active':''}" onclick="switchSample(${idx})">${s.desc.substring(0,20)}</button>`; });
+        container.innerHTML = html;
+    }
+
+    function switchSample(idx) { currentSampleIdx = idx; renderTabs(); renderIndentationCards(); }
+
+    // ========== PRINT FUNCTION – ORIGINAL LETTERHEAD ==========
+    function generateOriginalStylePrint() {
+        let samplesData = samples.map(s => {
+            let hvVals = [], indData = [];
+            for(let i=0;i<3;i++) {
+                let d1 = s.indents[i].d1 ? parseFloat(s.indents[i].d1) : null;
+                let d2 = s.indents[i].d2 ? parseFloat(s.indents[i].d2) : null;
+                let hv = computeHV(d1,d2,s.testLoad);
+                if(hv !== null && !isNaN(hv)) hvVals.push(hv);
+                let avgDiag = (d1&&d2) ? ((d1+d2)/2).toFixed(3) : '--';
+                let diffPct = (d1&&d2) ? ((Math.abs(d1-d2)/((d1+d2)/2))*100).toFixed(2) : '--';
+                indData.push({ d1: s.indents[i].d1||'--', d2: s.indents[i].d2||'--', avg: avgDiag, diff: diffPct, hv: hv !== null ? hv : '--' });
+            }
+            let finalHV = hvVals.length ? (hvVals.reduce((a,b)=>a+b,0) / hvVals.length) : '--';
+            let finalHVDisplay = (finalHV !== '--') ? finalHV.toFixed(2) : '--';
+            let logBookText = `Hardness entry in log books page no ${s.logPage} dated ${s.logDate ? new Date(s.logDate).toLocaleDateString('en-GB') : '______'}`;
+            return { s, indData, finalHVDisplay, logBookText };
+        });
+
+        let samplesHTML = '';
+        let colWidth = samples.length===1 ? '100%' : '48%';
+        for(let idx=0; idx<samplesData.length; idx++) {
+            let d = samplesData[idx];
+            let s = d.s;
+            let reportDateFormatted = s.reportDate ? new Date(s.reportDate).toLocaleDateString('en-GB') : '__________';
+            let descUpper = s.desc.toUpperCase();
+            let stampingUpper = s.stamping.toUpperCase();
+            let labSerialUpper = s.labSerial.toUpperCase();
+            let extraStyle = '';
+            if(samples.length === 2 && idx === 0) {
+                extraStyle = 'border-right: 4px solid #000; padding-right: 2%; margin-right: 2%;';
+            }
+            samplesHTML += `<div style="width:${colWidth}; float:left; ${extraStyle} margin-bottom:20px;">
+                <table class="info-table" style="width:100%; border-collapse:collapse; margin-bottom:8px;">
+                    </tr><td style="border:2px solid #000; padding:6px; width:50%"><b>LAB NO:</b> ${labSerialUpper}<\/td><td style="border:2px solid #000; padding:6px; width:50%"><b>DATE OF REPORT:</b> ${reportDateFormatted}<\/td><\/tr>
+                    <tr><td style="border:2px solid #000; padding:6px"><b>SAMPLE DESCRIPTION:</b> ${descUpper}<\/td><td style="border:2px solid #000; padding:6px"><b>STAMPING:</b> ${stampingUpper}<\/td><\/tr>
+                <\/table>
+                <table class="data-table" style="width:100%; border-collapse:collapse;">
+                    <thead><tr style="background:#f3f3f3;"><th style="border:2px solid #000; padding:6px;">Measurement Parameters<\/th><th>Indentation 1<\/th><th>Indentation 2<\/th><th>Indentation 3<\/th><\/tr><\/thead>
+                    <tbody><tr><td class="param" style="border:2px solid #000; text-align:left;"><b>Diagonal D1 (mm)<\/b><\/td><td style="border:2px solid #000;">${d.indData[0].d1}<\/td><td style="border:2px solid #000;">${d.indData[1].d1}<\/td><td style="border:2px solid #000;">${d.indData[2].d1}<\/td><\/tr>
+                    <tr><td class="param" style="border:2px solid #000; text-align:left;"><b>Diagonal D2 (mm)<\/b><\/td><td style="border:2px solid #000;">${d.indData[0].d2}<\/td><td style="border:2px solid #000;">${d.indData[1].d2}<\/td><td style="border:2px solid #000;">${d.indData[2].d2}<\/td><\/tr>
+                    <tr><td class="param" style="border:2px solid #000; text-align:left;"><b>% Difference b/w diagonals<\/b><\/td><td style="border:2px solid #000;">${d.indData[0].diff}%<\/td><td style="border:2px solid #000;">${d.indData[1].diff}%<\/td><td style="border:2px solid #000;">${d.indData[2].diff}%<\/td><\/tr>
+                    <tr class="avg-diag-row"><td class="param" style="border:2px solid #000; text-align:left;"><b>Average of diagonals (mm)<\/b><\/td><td style="border:2px solid #000;">${d.indData[0].avg}<\/td><td style="border:2px solid #000;">${d.indData[1].avg}<\/td><td style="border:2px solid #000;">${d.indData[2].avg}<\/td><\/tr>
+                    <tr><td class="param" style="border:2px solid #000; text-align:left;"><b>Hardness (HV) @ ${s.testLoad} kgf<\/b><\/td><td style="border:2px solid #000;">${d.indData[0].hv}<\/td><td style="border:2px solid #000;">${d.indData[1].hv}<\/td><td style="border:2px solid #000;">${d.indData[2].hv}<\/td><\/tr>
+                    <\/tbody>
+                <\/table>
+                <div class="final-hv" style="text-align:center; font-size:18px; font-weight:800; margin:12px 8px; padding:10px; background:#e8f5e9; border:2px solid #2e7d32; border-radius:10px;">
+                🔹 HARDNESS - <span style="color:#b91c1c;">${d.finalHVDisplay}</span> <span> HV </span> <span>${s.testLoad}</span> 🔹
+                <br><small>(Average of ${d.indData.filter(x=>x.hv !== '--').length} valid indentations)</small>
+                <\/div>
+                <div style="margin:10px 0 5px 8px; border-left:3px solid #c60c1e; padding-left:8px;">📘 ${d.logBookText}<\/div>
+            <\/div>`;
+        }
+
+        let testedByNameUpper = commonFields.testedByName.toUpperCase();
+        let tmNameUpper = commonFields.tmName.toUpperCase();
+
+        return `<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>Vickers Hardness Report - Western Railway<\/title><style>
+            *{margin:0;padding:0;box-sizing:border-box;} @page{size:A4 landscape;margin:5mm;}
+            body{font-family:'Times New Roman', Times, serif;background:white;margin:0;padding:5px;display:flex;justify-content:center;min-height:100vh;}
+            .report-wrapper{width:100%;max-width:1150px;margin:0 auto;} .outer-border{width:100%;border:3px solid #000;background:white;}
+            .header-section{display:flex;align-items:center;border-bottom:2.5px solid #000;padding:5px;}
+            .header-logo{width:12%;text-align:center;} .header-logo img{width:65px;max-height:65px;object-fit:contain;}
+            .header-logo div{font-size:9px; color:#c60c1e;} .header-text{width:76%;text-align:center;}
+            .header-text h1{font-size:18px;margin:0; color:#dc2626; font-weight:bold;} .header-text h2{font-size:15px;margin:2px 0; color:#2563eb; font-weight:bold;}
+            .header-text p{font-size:10px;margin:0; color:#333;} .accreditation-blue{color:#2563eb; font-size:10px; font-weight:bold; margin-top:2px;}
+            table{width:100%;border-collapse:collapse;} th,td{border:2px solid #000;font-size:11px;padding:6px;text-align:center;}
+            .title-bar{text-align:center;font-weight:bold;font-size:13px;padding:4px;border-top:2px solid #000;border-bottom:2px solid #000;letter-spacing:1px;background:#f4f4f4;}
+            .info-table td{height:28px;font-weight:bold;padding:4px;font-size:11px;} .data-table th{background:#f3f3f3;height:30px;}
+            .param{text-align:left;padding-left:8px;font-weight:bold;width:30%;background:#fafaf0;}
+            .footer-table td{height:85px;vertical-align:bottom;font-weight:bold;width:50%;padding:6px 12px;text-align:left;}
+            .format-table td{border:2px solid #000; padding:6px;} .clearfix::after{content:""; clear:both; display:table;}
+            .header-logo:first-child { position: relative; left: 100px; }
+            .header-logo:last-child { position: relative; left: -150px; }
+        <\/style><\/head><body>
+        <div class="report-wrapper"><div class="outer-border">
+        <div class="header-section"><div class="header-logo"><img src="${customLogoLeft}"><div>पश्चिम रेलवे<br>Western Railway<\/div><\/div>
+        <div class="header-text"><h1>रसायनिक एवं धातुकर्म प्रयोगशाला<\/h1><h2>CHEMICAL AND METALLURGICAL LABORATORY<\/h2>
+        <div class="accreditation-blue">(NABL ACCREDITED AS PER ISO\/IEC: 17025-2005)<\/div><p>Carriage Repair Workshop, Lower Parel, Mumbai-400013<\/p><p>Phone: 022-67640012 | Email: cmslabfi@gmail.com<\/p><\/div>
+        <div class="header-logo"><img src="${customLogoRight}"><\/div><\/div>
+        <div style="margin-top:12px;"> <\/div>
+        <table class="format-table"><tr><td style="width:20%"><b>Format No.<\/td><td>F-7.5-01<\/td><td style="width:60%; text-align:center;" colspan="3"><b>TEST DATA OF MECHANICAL TESTING<\/b><\/td><\/tr>
+        <tr><td style="width:20%"><b>Issue No.<\/b> 02<b> | <b>Section.<\/b> 7.5<\/td><td><b>Issue Date.<\/b> 01.01.2020<\/td><td><b>Page No.<\/b> 1 of 1<\/td><td><b>Amendment No.<\/b> 01<\/td><td><b>Amendment Date<\/b> 13-06-2022<\/td><\/tr><\/table>
+        <div class="title-bar">VICKERS HARDNESS TEST REPORT<\/div>
+        <div class="clearfix">${samplesHTML}<\/div><div style="clear:both;"><\/div>
+        <table class="footer-table"><tr><td style="text-align:left;"><b>Tested By<\/b><br><br>${testedByNameUpper}<\/td><td style="text-align:left;"><b>Technical Manager (TM)<\/b><br><br>${tmNameUpper}<\/td><\/tr><\/table>
+        <div style="text-align:center; font-size:9px;color:red;">⚙️ Vickers Hardness Test performed as per IS 1501/2025 | indentor-136 degree dimond square prymid | serial no of machine-1234567 | cilibration date-22/08/2026<\/div>
+        <\/div><\/div><\/body><\/html>`;
+    }
+
+    function generateAndPrintReport() { let w = window.open('','_blank'); w.document.write(generateOriginalStylePrint()); w.document.close(); w.print(); }
+
+    // ========== SAVE / HISTORY FUNCTIONS ==========
+    function saveToLocal() {
+        if(!samples.length) { showToast("No test data to save."); return; }
+        let historyItem = {
+            id: editingId || Date.now(),
+            sessionId: sessionId,
+            date: new Date().toISOString(),
+            common: { testedByName: commonFields.testedByName, tmName: commonFields.tmName },
+            samples: samples.map(s => ({
+                desc: s.desc, stamping: s.stamping, labSerial: s.labSerial,
+                logPage: s.logPage, logDate: s.logDate, reportDate: s.reportDate,
+                testLoad: s.testLoad,
+                indents: s.indents.map(ind => ({ d1: ind.d1||'', d2: ind.d2||'' }))
+            }))
+        };
+        let history = localStorage.getItem('vickers_history_final');
+        let arr = history ? JSON.parse(history) : [];
+        if (editingId) {
+            let idx = arr.findIndex(i => i.id == editingId);
+            if(idx !== -1) arr[idx] = historyItem;
+            else arr.unshift(historyItem);
+            showToast("✅ Session updated in history!");
+            editingId = null;
+        } else {
+            arr.unshift(historyItem);
+            if(arr.length>50) arr=arr.slice(0,50);
+            showToast("✅ Session saved to history!");
+        }
+        localStorage.setItem('vickers_history_final', JSON.stringify(arr));
+        sessionId = Date.now();
+        autoSaveCurrentState();
+    }
+
+    // ========== SEND TO GOOGLE SHEETS (converts dates to ISO before sending) ==========
+    function sendToGoogleSheets() {
+        if(!samples.length) { showToast("No test data to send."); return; }
+        saveToLocal();
+
+        const rows = [];
+        for(let sIdx = 0; sIdx < samples.length; sIdx++) {
+            const sample = samples[sIdx];
+            const base = {
+                "Sample Description": sample.desc || '',
+                "Stamping / ID": sample.stamping || '',
+                "Lab Serial No": sample.labSerial || '',
+                "Log Book Page": sample.logPage || '',
+                "Log Entry Date": sample.logDate || '',
+                "Report Date": sample.reportDate || '',
+                "Test Load (kgf)": sample.testLoad || ''
+            };
+            
+            const indentFields = {};
+            for(let i=0; i<3; i++) {
+                const indent = sample.indents[i];
+                const d1Raw = indent.d1;
+                const d2Raw = indent.d2;
+                let d1Val = (d1Raw !== undefined && d1Raw !== '') ? parseFloat(d1Raw) : null;
+                let d2Val = (d2Raw !== undefined && d2Raw !== '') ? parseFloat(d2Raw) : null;
+                let avgDiag = '--';
+                let diffPercent = '--';
+                let hardnessHV = '--';
+                if(d1Val !== null && d2Val !== null && !isNaN(d1Val) && !isNaN(d2Val) && d1Val>0 && d2Val>0) {
+                    const avg = (d1Val + d2Val) / 2;
+                    avgDiag = avg.toFixed(3);
+                    const diff = (Math.abs(d1Val - d2Val) / ((d1Val + d2Val)/2)) * 100;
+                    diffPercent = diff.toFixed(2) + '%';
+                    const hv = computeHV(d1Val, d2Val, sample.testLoad);
+                    hardnessHV = hv !== null ? hv.toString() : '--';
+                }
+                indentFields[`Indentation ${i+1} D1 (mm)`] = (d1Raw !== undefined && d1Raw !== '') ? d1Raw : '--';
+                indentFields[`Indentation ${i+1} D2 (mm)`] = (d2Raw !== undefined && d2Raw !== '') ? d2Raw : '--';
+                indentFields[`Indentation ${i+1} Avg Diagonal (mm)`] = avgDiag;
+                indentFields[`Indentation ${i+1} % Difference`] = diffPercent;
+                indentFields[`Indentation ${i+1} HV`] = hardnessHV;
+            }
+            
+            const row = { ...base, ...indentFields };
+            rows.push(row);
+        }
+        
+        if(rows.length === 0) { showToast("No valid sample data to send."); return; }
+        const payload = { sheetData: rows };
+        
+        if (MY_GOOGLE_SHEETS_URL && MY_GOOGLE_SHEETS_URL !== "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec") {
+            fetch(MY_GOOGLE_SHEETS_URL, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) })
+            .then(() => showToast("✅ Data sent to Google Sheets (one row per sample)!"))
+            .catch(() => showToast("⚠️ Failed to send to Sheets. Data saved locally."));
+        } else { showToast("❌ Please set valid Google Sheets URL in the code."); }
+    }
+
+    function getSampleDetails(sample) {
+        let indData = [], hvVals = [];
+        for(let i=0;i<3;i++) {
+            let d1 = sample.indents[i].d1 ? parseFloat(sample.indents[i].d1) : null;
+            let d2 = sample.indents[i].d2 ? parseFloat(sample.indents[i].d2) : null;
+            let hv = computeHV(d1,d2,sample.testLoad);
+            if(hv !== null && !isNaN(hv)) hvVals.push(hv);
+            let avgDiag = (d1 && d2) ? ((d1+d2)/2).toFixed(3) : '--';
+            let diffPct = (d1 && d2) ? ((Math.abs(d1-d2)/((d1+d2)/2))*100).toFixed(2) : '--';
+            indData.push({
+                d1: sample.indents[i].d1 || '--',
+                d2: sample.indents[i].d2 || '--',
+                avg: avgDiag,
+                diff: diffPct,
+                hv: (hv !== null && !isNaN(hv)) ? hv : '--'
+            });
+        }
+        let finalHV = hvVals.length ? (hvVals.reduce((a,b)=>a+b,0) / hvVals.length) : '--';
+        let finalHVDisplay = (finalHV !== '--') ? finalHV.toFixed(2) : '--';
+        return { indData, finalHV: finalHVDisplay };
+    }
+
+    function showHistory() {
+        let history = localStorage.getItem('vickers_history_final');
+        let arr = history ? JSON.parse(history) : [];
+        let body = document.getElementById('historyBody');
+        if(arr.length===0) body.innerHTML = '<div class="no-history">No saved sessions.</div>';
+        else {
+            let html = '';
+            for(let item of arr) {
+                let sampleNames = item.samples.map(s=>s.desc).join(', ');
+                let dateStr = new Date(item.date).toLocaleString();
+                html += `<div class="history-item"><h4>${dateStr}</h4><div class="history-details"><div><strong>Samples:</strong> ${sampleNames}</div><div><strong>Tested By:</strong> ${item.common.testedByName}</div></div>`;
+                for(let si=0; si<item.samples.length; si++) {
+                    let s = item.samples[si];
+                    let details = getSampleDetails(s);
+                    html += `<details><summary>📊 Sample ${si+1}: ${s.desc} (Avg HV: ${details.finalHV} @ ${s.testLoad} kgf)</summary>
+                        <div class="history-indent-details"><table><thead><tr><th>Indent</th><th>D1</th><th>D2</th><th>Avg</th><th>% Diff</th><th>HV</th></tr></thead><tbody>`;
+                    for(let i=0;i<3;i++) {
+                        let d = details.indData[i];
+                        html += `<tr><td style="border:1px solid #334155; padding:6px;">${i+1}<\/td><td style="border:1px solid #334155; padding:6px;">${d.d1}<\/td><td style="border:1px solid #334155; padding:6px;">${d.d2}<\/td><td style="border:1px solid #334155; padding:6px;">${d.avg}<\/td><td style="border:1px solid #334155; padding:6px;">${d.diff}%<\/td><td style="border:1px solid #334155; padding:6px;">${d.hv}<\/td><\/tr>`;
+                    }
+                    html += `</tbody></table><div><strong>Final Average HV:</strong> ${details.finalHV} HV @ ${s.testLoad} kgf</div></div></details>`;
+                }
+                html += `<div class="history-actions"><button class="btn-load" onclick="editHistoryItem(${item.id})">Load & Edit</button>
+                         <button class="btn-print-history" onclick="printHistoryItem(${item.id})">Print</button></div></div>`;
+            }
+            body.innerHTML = html;
+        }
+        document.getElementById('historyModal').style.display = 'flex';
+    }
+
+    function closeHistory() { document.getElementById('historyModal').style.display = 'none'; }
+    function clearAllHistory() { if(confirm("Delete all history?")) { localStorage.removeItem('vickers_history_final'); showToast("History cleared"); showHistory(); } }
+
+    function editHistoryItem(id) {
+        let history = localStorage.getItem('vickers_history_final');
+        let arr = history ? JSON.parse(history) : [];
+        let item = arr.find(i => i.id == id);
+        if(item) {
+            samples = item.samples.map(s => ({ ...s, indents: s.indents.map(ind=>({ d1: ind.d1, d2: ind.d2 })) }));
+            commonFields = { testedByName: item.common.testedByName, tmName: item.common.tmName };
+            sessionId = item.sessionId;
+            editingId = item.id;
+            if(samples[0]) {
+                document.getElementById('sampleDesc').value = samples[0].desc;
+                document.getElementById('stampingVal').value = samples[0].stamping;
+                document.getElementById('labSerial').value = samples[0].labSerial;
+                document.getElementById('logPage').value = samples[0].logPage;
+                document.getElementById('logDate').value = toDisplayDate(samples[0].logDate);
+                document.getElementById('reportDate').value = toDisplayDate(samples[0].reportDate);
+                document.getElementById('testLoad').value = samples[0].testLoad;
+            }
+            let secondContainer = document.getElementById('secondSampleContainer');
+            let addBtn = document.querySelector('#sample1Fields + button');
+            if(samples.length > 1) {
+                secondContainer.style.display = 'block';
+                if(addBtn) addBtn.style.display = 'none';
+                let s2 = samples[1];
+                document.getElementById('sampleDesc2').value = s2.desc;
+                document.getElementById('stampingVal2').value = s2.stamping;
+                document.getElementById('labSerial2').value = s2.labSerial;
+                document.getElementById('logPage2').value = s2.logPage;
+                document.getElementById('logDate2').value = toDisplayDate(s2.logDate);
+                document.getElementById('reportDate2').value = toDisplayDate(s2.reportDate);
+                document.getElementById('testLoad2').value = s2.testLoad;
+            } else {
+                secondContainer.style.display = 'none';
+                if(addBtn) addBtn.style.display = 'block';
+            }
+            document.getElementById('testedByName').value = commonFields.testedByName;
+            document.getElementById('tmName').value = commonFields.tmName;
+            document.getElementById('inputScreen').classList.remove('hidden');
+            document.getElementById('mainScreen').classList.add('hidden');
+            closeHistory();
+            showToast("Loaded for editing. Modify, then click Next and Save.");
+            autoSaveCurrentState();
+        } else showToast("Item not found");
+    }
+
+    function printHistoryItem(id) {
+        let history = localStorage.getItem('vickers_history_final');
+        let arr = history ? JSON.parse(history) : [];
+        let item = arr.find(i => i.id == id);
+        if(item) {
+            let oldSamples = samples, oldCommon = commonFields;
+            samples = item.samples.map(s => ({ ...s, indents: s.indents.map(ind=>({ d1: ind.d1, d2: ind.d2 })) }));
+            commonFields = { testedByName: item.common.testedByName, tmName: item.common.tmName };
+            let printHTML = generateOriginalStylePrint();
+            let w = window.open('','_blank');
+            w.document.write(printHTML);
+            w.document.close();
+            w.print();
+            samples = oldSamples;
+            commonFields = oldCommon;
+        } else showToast("Item not found");
+    }
+
+    function resetCurrentSampleIndents() {
+        if(samples[currentSampleIdx]) { samples[currentSampleIdx].indents = [{d1:'',d2:''},{d1:'',d2:''},{d1:'',d2:''}]; renderIndentationCards(); showToast(`Sample ${currentSampleIdx+1} indents reset`); }
+    }
+
+    function resetToFreshEntry() {
+        if(confirm("Start a fresh entry? All unsaved data will be lost.")) {
+            samples = [];
+            commonFields = { testedByName: "", tmName: "" };
+            editingId = null;
+            sessionId = Date.now();
+            document.getElementById('sampleDesc').value = '';
+            document.getElementById('stampingVal').value = '';
+            document.getElementById('labSerial').value = '';
+            document.getElementById('logPage').value = '';
+            document.getElementById('logDate').value = '';
+            document.getElementById('reportDate').value = '';
+            document.getElementById('testLoad').value = '30';
+            document.getElementById('testedByName').value = '';
+            document.getElementById('tmName').value = '';
+            document.getElementById('sampleDesc2').value = '';
+            document.getElementById('stampingVal2').value = '';
+            document.getElementById('labSerial2').value = '';
+            document.getElementById('logPage2').value = '';
+            document.getElementById('logDate2').value = '';
+            document.getElementById('reportDate2').value = '';
+            document.getElementById('testLoad2').value = '30';
+            document.getElementById('secondSampleContainer').style.display = 'none';
+            let addBtn = document.querySelector('#sample1Fields + button');
+            if(addBtn) addBtn.style.display = 'block';
+            document.getElementById('inputScreen').classList.remove('hidden');
+            document.getElementById('mainScreen').classList.add('hidden');
+            localStorage.removeItem('vickers_autosave');
+            showToast("Fresh entry ready.");
+        }
+    }
+
+    function saveSampleInfoAndProceed() {
+        let sample1 = {
+            desc: document.getElementById('sampleDesc').value.trim(),
+            stamping: document.getElementById('stampingVal').value.trim(),
+            labSerial: document.getElementById('labSerial').value.trim() || '__________',
+            logPage: document.getElementById('logPage').value.trim(),
+            logDate: toISODate(document.getElementById('logDate').value.trim()),
+            reportDate: toISODate(document.getElementById('reportDate').value.trim()),
+            testLoad: document.getElementById('testLoad').value,
+            indents: (samples[0] && samples[0].indents) ? samples[0].indents : [{d1:'',d2:''},{d1:'',d2:''},{d1:'',d2:''}]
+        };
+        if(!sample1.desc || !sample1.stamping || !sample1.logPage || !sample1.logDate || !sample1.reportDate || !sample1.testLoad) {
+            alert("Please fill all required fields for Sample 1 (dates in dd/mm/yyyy)");
+            return;
+        }
+        let testedByName = document.getElementById('testedByName').value.trim();
+        let tmName = document.getElementById('tmName').value.trim();
+        if(!testedByName || !tmName) { alert("Please fill Tested By and Technical Manager names"); return; }
+        commonFields = { testedByName, tmName };
+
+        let secondContainer = document.getElementById('secondSampleContainer');
+        let twoSamples = secondContainer.style.display !== 'none';
+        let sample2 = null;
+        if(twoSamples) {
+            let desc2 = document.getElementById('sampleDesc2').value.trim();
+            let stamp2 = document.getElementById('stampingVal2').value.trim();
+            let labSerial2 = document.getElementById('labSerial2').value.trim() || '__________';
+            let logPage2 = document.getElementById('logPage2').value.trim();
+            let logDate2 = toISODate(document.getElementById('logDate2').value.trim());
+            let reportDate2 = toISODate(document.getElementById('reportDate2').value.trim());
+            let testLoad2 = document.getElementById('testLoad2').value;
+            if(desc2 && stamp2 && labSerial2 && logPage2 && logDate2 && reportDate2 && testLoad2) {
+                sample2 = {
+                    desc: desc2, stamping: stamp2, labSerial: labSerial2, logPage: logPage2,
+                    logDate: logDate2, reportDate: reportDate2, testLoad: testLoad2,
+                    indents: (samples[1] && samples[1].indents) ? samples[1].indents : [{d1:'',d2:''},{d1:'',d2:''},{d1:'',d2:''}]
+                };
+            } else {
+                alert("Second sample details incomplete. Please fill all or cancel.");
+                return;
+            }
+        }
+        samples = [sample1];
+        if(sample2) samples.push(sample2);
+        currentSampleIdx = 0;
+        if(!editingId) sessionId = Date.now();
+        renderTabs();
+        renderIndentationCards();
+        document.getElementById('inputScreen').classList.add('hidden');
+        document.getElementById('mainScreen').classList.remove('hidden');
+        showToast(`Loaded ${samples.length} sample(s).`);
+        autoSaveCurrentState();
+    }
+
+    function handleLeftLogoUpload(e) { let f=e.target.files[0]; if(f && (f.type==='image/png'||f.type==='image/jpeg')) { let r=new FileReader(); r.onload=ev=>{ customLogoLeft=ev.target.result; document.getElementById('previewLogoLeft').src=customLogoLeft; document.getElementById('loginLogoPreview').querySelector('img').src=customLogoLeft; }; r.readAsDataURL(f); } else alert("PNG/JPG only"); }
+    function handleRightLogoUpload(e) { let f=e.target.files[0]; if(f && (f.type==='image/png'||f.type==='image/jpeg')) { let r=new FileReader(); r.onload=ev=>{ customLogoRight=ev.target.result; document.getElementById('previewLogoRight').src=customLogoRight; }; r.readAsDataURL(f); } else alert("PNG/JPG only"); }
+
+    function doLogin() {
+        let user = document.getElementById('username').value;
+        let pass = document.getElementById('password').value;
+        if ((user === 'admin' && pass === '1234') ||
+            (user === 'NIRAJ KUMAR' && pass === 'NIRAJ KUMAR')) {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('inputScreen').classList.remove('hidden');
+            let div = document.getElementById('sample1Fields');
+            if(!document.getElementById('addSecondBtn')) {
+                let btn = document.createElement('button');
+                btn.id = 'addSecondBtn';
+                btn.type = 'button';
+                btn.className = 'btn-secondary';
+                btn.innerHTML = '<i class="fas fa-plus-circle"></i> Add Second Sample (Optional)';
+                btn.style.marginTop = '15px';
+                btn.style.width = 'auto';
+                btn.onclick = () => {
+                    document.getElementById('secondSampleContainer').style.display = 'block';
+                    btn.style.display = 'none';
+                    autoFillSecondSample();
+                };
+                div.parentNode.insertBefore(btn, div.nextSibling);
+            }
+            restoreAutoSave();
+            startAutoSaveTimer();
+        } else alert("Invalid credentials! Use admin/1234 or NIRAJ KUMAR/NIRAJ KUMAR");
+    }
+
+    window.doLogin = doLogin;
+    window.saveSampleInfoAndProceed = saveSampleInfoAndProceed;
+    window.saveToLocal = saveToLocal;
+    window.sendToGoogleSheets = sendToGoogleSheets;
+    window.generateAndPrintReport = generateAndPrintReport;
+    window.resetCurrentSampleIndents = resetCurrentSampleIndents;
+    window.handleLeftLogoUpload = handleLeftLogoUpload;
+    window.handleRightLogoUpload = handleRightLogoUpload;
+    window.showHistory = showHistory;
+    window.closeHistory = closeHistory;
+    window.clearAllHistory = clearAllHistory;
+    window.editHistoryItem = editHistoryItem;
+    window.printHistoryItem = printHistoryItem;
+    window.resetToFreshEntry = resetToFreshEntry;
+    window.switchSample = switchSample;
+    window.updateIndent = updateIndent;
+</script>
+</body>
+</html>
